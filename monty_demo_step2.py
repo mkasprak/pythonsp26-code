@@ -34,6 +34,8 @@ def lookup():
 def ordering_system():
     """Displays menus and captures all user selections for the drink."""
 
+    # TODO - change input to right after each menu displays
+
     # 1. Display Coffee Types
     print("\n--- DRINK TYPES ---")
     for i, coffee in enumerate(COFFEE, 1):
