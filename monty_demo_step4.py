@@ -37,55 +37,53 @@ def lookup():
 
 def ordering_system():
     """Displays menus and captures all user selections for the drink."""
-
-    # TODO - change input to right after each menu displays
-
-    # 1. Display Coffee Types
-    print("\n--- DRINK TYPES ---")
-    for i, coffee in enumerate(COFFEE, 1):
-        print(f"{i}.) {coffee}")
-
-    # 2. Display Sizes and Prices
-    print("\n--- SIZES ---")
-    # Using a list to allow numeric selection from the dictionary
-    size_list = list(PRICES.keys())
-    for i, size in enumerate(size_list, 1):
-        print(f"{i}.) {size:12} | ${PRICES[size]:.2f}")
-
-    # 3. Display Milk Options
-    print("\n--- MILK OPTIONS ---")
-    for i, milk in enumerate(MILKS, 1):
-        print(f"{i}.) {milk}")
-
-    # 4. Display Flavor Options
-    print("\n--- FLAVOR ADD-INS ---")
-    for i, flavor in enumerate(FLAVORS, 1):
-        print(f"{i}.) {flavor}")
-
-    # 5. Display Shot Strength
-    print("\n--- SHOT STRENGTH ---")
-    for i, shot in enumerate(SHOTS, 1):
-        print(f"{i}.) {shot}")
-
     try:
-        print("\n--- FINALIZING SELECTION ---")
+        # TODO - change input to right after each menu displays
+
+        # 1. Display Coffee Types
+        print("\n--- DRINK TYPES ---")
+        for i, coffee in enumerate(COFFEE, 1):
+            print(f"{i}.) {coffee}")
         drink_idx = int(input("Select Drink Number: ")) - 1
-        size_idx = int(input("Select Size Number: ")) - 1
+
+        # 2. Display Sizes and Prices
+        print("\n--- SIZES ---")
+        # Using a list to allow numeric selection from the dictionary
+        size_list = list(PRICES.keys())
+        for i, size in enumerate(size_list, 1):
+            print(f"{i}.) {size:12} | ${PRICES[size]:.2f}")
+        size_idx = int(input("Select Size Number: ")) - \
+            1  # -1 because we count from 0
+
+        # 3. Display Milk Options
+        print("\n--- MILK OPTIONS ---")
+        for i, milk in enumerate(MILKS, 1):
+            print(f"{i}.) {milk}")
         milk_idx = int(input("Select Milk Number: ")) - 1
+
+        # 4. Display Flavor Options
+        print("\n--- FLAVOR ADD-INS ---")
+        for i, flavor in enumerate(FLAVORS, 1):
+            print(f"{i}.) {flavor}")
         flavor_idx = int(input("Select Flavor Number: ")) - 1
+
+        # 5. Display Shot Strength
+        print("\n--- SHOT STRENGTH ---")
+        for i, shot in enumerate(SHOTS, 1):
+            print(f"{i}.) {shot}")
         shot_idx = int(input("Select Shot Strength: ")) - 1
 
         # Map indices back to names for confirmation
-        selected_drink = COFFEE[drink_idx]
-        selected_size = size_list[size_idx]
-        selected_milk = MILKS[milk_idx]
-        selected_flavor = FLAVORS[flavor_idx]
-        selected_shot = SHOTS[shot_idx]
+        drink = COFFEE[drink_idx]
+        size = size_list[size_idx]
+        milk = MILKS[milk_idx]
+        flavor = FLAVORS[flavor_idx]
+        shot = SHOTS[shot_idx]
 
         print(
-            f"\nOrder Summary: {selected_size} {selected_drink} with {selected_milk} milk, {selected_flavor} flavor, ({selected_shot})")
+            f"\n{size} {drink} with {milk} milk, shots {shot} of {flavor}")
 
-        return selected_drink, selected_size, selected_milk, selected_flavor, selected_shot
+        return drink, size, milk, flavor, shot
 
     except Exception as e:
         print(f"Input Error: {e}")
@@ -97,13 +95,15 @@ def read_orders():
     pass
 
 
-def save_orders():
-    # Placeholder for next week: Write current order to file
-    print("Saving Order to File...")
+def save_orders(first, last, ext, coffee, size, milk, flavor, shots):
+    with open("orders.txt", "a") as file:
+        file.write(
+            f"{first}, {last}, {coffee}, {size}, {milk}, {flavor}, {shots}")
 
 
-def print_labels():
-    print("Printing 2x3 Avery Label...")
+def print_labels(first, last, coffee, size, milk, flavor, shots, cost):
+    print(f"{first} {last}\nDrink: {coffee}\nSize: {size}\Milk Type:{milk}")
+    print(f"Flavor: {flavor}, Number of pumps: {shots}")
 
 
 def calculate_cost(size_name):
@@ -121,11 +121,12 @@ def main():
 
     # Run Ordering Menu
     coffee, size, milk, flavor, shots = ordering_system()
+    save_orders(first, last, ext, coffee, size, milk, flavor, shots)
 
     # If a valid selection was made, run the next steps
     if coffee:
-        calculate_cost(size)
-        print_labels()
+        cost = calculate_cost(size)
+        print_labels(first, last, coffee, size, milk, flavor, shots, cost)
         # save_orders()  <-- Ready for next week
 
 
