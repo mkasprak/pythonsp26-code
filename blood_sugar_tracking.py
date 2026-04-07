@@ -24,7 +24,7 @@ def save_to_file(timestamp_str, blood_sugar):
         timestamp_str: blood_sugar
     }
 
-    # Open the log file in append mode ('a') so new entries are added to the end
+    # Open the log file in append mode ('a') so new entries are added
     with open("blood_sugar_log.txt", "a") as file:
         # Write the timestamp and blood sugar value to the file
         file.write(f"{timestamp_str} : {health_log[timestamp_str]},\n")

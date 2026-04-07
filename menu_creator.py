@@ -29,7 +29,7 @@ def save_to_file(menu):
         all_items = menu.items()
         print(all_items)
         for item in all_items:
-            output = (f"{item[0]} : {item[1]}")
+            output = (f"{item[0]} ; {item[1]}")
             print(output)
             file.write(output + "\n")
 
