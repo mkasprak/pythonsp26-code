@@ -1,14 +1,9 @@
 
-# This script demonstrates a coffee ordering system with menu reading,
-# user input, and file writing.
-# It is thoroughly annotated to help students understand each part of the code.
 """
-    Write to files
-"""
-
-"""
-1. Demonstrate functions
-2. Interface design (menus/ passing)
+    This script demonstrates a coffee ordering system with menu reading,
+    user input, and file writing.
+    It is thoroughly annotated to help students understand each
+    part of the code.
 """
 
 
@@ -61,23 +56,23 @@ def split_into_variables(menu_items):
     prices = menu_items.get("PRICES")
     milks = menu_items.get("MILK")
     flavors = menu_items.get("FLAVORS")
-    shots = menu_items.get("SHOTS")
+    pumps = menu_items.get("PUMPS")
 
     # Return all menu sections as a tuple
-    return coffee, prices, milks, flavors, shots
+    return coffee, prices, milks, flavors, pumps
 
 
 # This function displays the menu options and captures all user
 # selections for the drink.
 def ordering_system(coffee_menu, prices_menu, milks_menu,
-                    flavors_menu, shots_menu):
+                    flavors_menu, pumps_menu):
     """Displays menus and captures all user selections for the drink."""
 
     # Test print to show function is running
     print("Test ordering system")
     # Print all menu sections for debugging
     print(f"drinks: {coffee_menu}\nprices: {prices_menu}\nmilks:{milks_menu}")
-    print(f"flavors: {flavors_menu}\nshots: {shots_menu}")
+    print(f"flavors: {flavors_menu}\npumps: {pumps_menu}")
     try:
         # TODO - change input to right after each menu displays
         nbr = 1
@@ -125,31 +120,29 @@ def ordering_system(coffee_menu, prices_menu, milks_menu,
         flavor_idx = int(input("Select Flavor Number: ")) - \
             1  # User selects flavor
 
-        # 5. Display Shot Strength
-        print("\n--- SHOT STRENGTH ---")
+        # 5. Display Pumps of Flavor
+        print("\n--- PUMPS OF FLAVOR ---")
         nbr = 1
-        shot_item = shots_menu.split(",")  # Split shots
-        for shot in shot_item:
-            shot = shot.strip()
-            print(f"{nbr}. {shot}")
+        pumps_item = pumps_menu.split(",")  # Split pumps
+        for pumps in pumps_item:
+            pumps = pumps.strip()
+            print(f"{nbr}. {pumps}")
             nbr += 1
-        shot_idx = int(input("Select Shot Strength: ")) - \
-            1  # User selects shot
+        pumps_idx = int(input("Select number of pumps: ")) - \
+            1  # User selects pumps
 
         # Map indices back to names for confirmation
-        # Note: These are string splits, not lists,
-        # so we split again for lookup
         drink = coffee_item[drink_idx]
         size = size_item[size_idx]
         milk = milk_item[milk_idx]
         flavor = flavor_item[flavor_idx]
-        shot = shot_item[shot_idx]
+        pumps = pumps_item[pumps_idx]
 
         # Print the user's full order for confirmation
         print(
-            f"\n{size} {drink} with {milk} milk, shots {shot} of {flavor}")
+            f"\n{size} {drink} with {milk} milk, {pumps} pumps of {flavor}")
 
-        return drink, size, milk, flavor, shot
+        return drink, size, milk, flavor, pumps
 
     except Exception as e:
         # Catch any input or index errors and inform the user
@@ -157,16 +150,35 @@ def ordering_system(coffee_menu, prices_menu, milks_menu,
         return None, None, None, None, None
 
 
-# Placeholder for next week: Read file to display last 5 unique orders
-def read_orders():
-    pass
+# print each unique order for the current emp_num
+def read_orders(emp_num):
+    try:
+        with open("orders.txt", "r") as file:
+            lines = file.readlines()
+
+        unique_orders = []
+        for line in lines:
+            parts = line.split(",")
+            if len(parts) < 4:
+                continue
+            if parts[3].strip() == emp_num:
+                if line not in unique_orders:
+                    unique_orders.append(line)
+                    print(line.strip())
+        if not unique_orders:
+            print("No orders found for this employee number.")
+    except FileNotFoundError:
+        print("No orders found. The file 'orders.txt' does not exist yet.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 
 # This function saves the order details to 'orders.txt'.
-def save_orders(first, last, ext, coffee, size, milk, flavor, shots):
+def save_orders(first, last, ext, emp, coffee, size, milk, flavor, shots):
     with open("orders.txt", "a") as file:
         file.write(
-            f"{first}, {last}, {coffee}, {size}, {milk}, {flavor}, {shots}\n")
+            f"{first}, {last}, {ext}, {emp}, {coffee}, {size}, \
+                {milk}, {flavor}, {shots}\n")
 
 
 # This function prints a label for the order.
@@ -178,14 +190,20 @@ def print_labels(first, last, coffee, size, milk, flavor, shots, cost):
 # This function calculates the cost based on the selected size.
 def calculate_cost(size_name, prices_menu):
     """Calculates total based on the selected size key."""
-    # This is a placeholder; actual price lookup may differ
-    # if size_name in prices_menu:
-    #     cost = prices_menu[size_name]
-    #     print(f"Total Cost for paycheck deduction: ${cost:.2f}")
-    #     return cost
-    # else:
-    #     print("Cost calculation unavailable.")
-    #     return 0
+    # Assume prices_menu is a comma-separated string like
+    # 'Small:2.00,Medium:2.50,Large:3.00'
+    prices = {}
+    for item in prices_menu.split(","):
+        if ":" in item:
+            size, price = item.split(":")
+            prices[size.strip()] = float(price.strip())
+    if size_name in prices:
+        cost = prices[size_name]
+        print(f"Total Cost for paycheck deduction: ${cost:.2f}")
+        return cost
+    else:
+        print("Cost calculation unavailable.")
+        return 0
 
 
 # Main function to run the program
@@ -197,23 +215,88 @@ def main():
     menu_items = read_menu()
 
     # Split menu into variables for each section
-    coffee_menu, prices_menu, milks_menu, flavors_menu, shots_menu = \
+    coffee_menu, prices_menu, milks_menu, flavors_menu, pumps_menu = \
         split_into_variables(menu_items)
 
     # Run Ordering Menu: get all user selections
-    coffee_order, size_order, milk_order, flavor_order, shots_order = \
+    coffee_order, size_order, milk_order, flavor_order, pumps_order = \
         ordering_system(coffee_menu, prices_menu, milks_menu,
-                        flavors_menu, shots_menu)
+                        flavors_menu, pumps_menu)
+
     # Save the order to file
-    save_orders(first, last, ext, coffee_order, size_order,
-                milk_order, flavor_order, shots_order)
+    save_orders(first, last, ext, emp, coffee_order, size_order,
+                milk_order, flavor_order, pumps_order)
+
+    # Print the order for review
+    print("\nYour order has been saved. Here is your order:")
+    print_labels(first, last, coffee_order, size_order,
+                 milk_order, flavor_order, pumps_order, 0)
+
+    # Ask the user if they want to change, cancel, or proceed
+    print("\nWould you like to:")
+    print("1. Change your order")
+    print("2. Cancel (delete) your order")
+    print("3. Proceed (keep order as is)")
+    choice = input("Enter 1, 2, or 3: ").strip()
+
+    if choice == "1":
+        print("\nLet's change your order. Please re-enter your selections.")
+        # Re-run the ordering system and overwrite the last order
+        coffee_order, size_order, milk_order, flavor_order, pumps_order = \
+            ordering_system(coffee_menu, prices_menu, milks_menu,
+                            flavors_menu, pumps_menu)
+        # Overwrite the last order (delete and re-save)
+        update_last_order(emp, first, last, ext, coffee_order,
+                          size_order, milk_order, flavor_order, pumps_order)
+        print("Order updated!")
+        print_labels(first, last, coffee_order, size_order,
+                     milk_order, flavor_order, pumps_order, 0)
+    elif choice == "2":
+        print("\nYour order will be deleted.")
+        delete_last_order(emp)
+        print("Order deleted.")
+    else:
+        print("Order kept as is.")
 
     # If a valid selection was made, run the next steps
     if coffee_order:
         cost = calculate_cost(size_order, prices_menu)
         print_labels(first, last, coffee_order, size_order,
-                     milk_order, flavor_order, shots_order, cost)
-        # save_orders()  <-- Ready for next week
+                        milk_order, flavor_order, pumps_order, cost)
+
+    # Helper function to update the last order for the current employee
+
+    def update_last_order(emp_num, first, last, ext, coffee, size, milk, flavor, pumps):
+        try:
+            with open("orders.txt", "r") as file:
+                lines = file.readlines()
+            # Find the last order for this employee
+            for i in range(len(lines) - 1, -1, -1):
+                parts = lines[i].split(",")
+                if len(parts) > 3 and parts[3].strip() == emp_num:
+                    # Replace this line with the new order
+                    lines[i] = f"{first}, {last}, {ext}, {emp_num}, {coffee}, {size}, {milk}, {flavor}, {pumps}\n"
+                    break
+            with open("orders.txt", "w") as file:
+                file.writelines(lines)
+        except Exception as e:
+            print(f"Error updating order: {e}")
+
+    # Helper function to delete the last order for the current employee
+    def delete_last_order(emp_num):
+        try:
+            with open("orders.txt", "r") as file:
+                lines = file.readlines()
+            # Find and remove the last order for this employee
+            for i in range(len(lines) - 1, -1, -1):
+                parts = lines[i].split(",")
+                if len(parts) > 3 and parts[3].strip() == emp_num:
+                    del lines[i]
+                    break
+            with open("orders.txt", "w") as file:
+                file.writelines(lines)
+        except Exception as e:
+            print(f"Error deleting order: {e}")
 
 
 # Run the main function if this script is executed
