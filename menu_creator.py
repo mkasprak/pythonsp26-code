@@ -25,7 +25,7 @@ def get_menu_options():
 def save_to_file(menu):
 
     # Open the log file in append mode ('a') so new entries are appended
-    with open("menu.txt", "a") as file:
+    with open("menu.txt", "w") as file:
         all_items = menu.items()
         print(all_items)
         for item in all_items:

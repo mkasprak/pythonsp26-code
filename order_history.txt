@@ -1,0 +1,11 @@
+ORDER:
+Name: Dave Smith
+Phone: 84528544
+Size: 6 inch
+Bread: Italian
+Protein: Ham
+Cheese: Cheddar
+Topping: Tomato
+Sauce: Ranch
+Total: $5.00
+
