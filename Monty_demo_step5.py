@@ -5,9 +5,11 @@
     It is thoroughly annotated to help students understand each
     part of the code.
 """
-
+import datetime
 
 # This function collects employee identification details from the user.
+
+
 def lookup():
     """Collects employee identification details."""
     fname = input("Please Enter First Name: ")  # Prompt for first name
@@ -175,16 +177,56 @@ def read_orders(emp_num):
 
 # This function saves the order details to 'orders.txt'.
 def save_orders(first, last, ext, emp, coffee, size, milk, flavor, shots):
+    # Get the current date and time
+    current_time = datetime.datetime.now()
+    # Format the timestamp as a readable string
+    timestamp_str = current_time.strftime("%Y-%m-%d %H:%M:%S")
     with open("orders.txt", "a") as file:
         file.write(
             f"{first}, {last}, {ext}, {emp}, {coffee}, {size}, \
-                {milk}, {flavor}, {shots}\n")
+                {milk}, {flavor}, {shots}, {timestamp_str}\n")
 
 
 # This function prints a label for the order.
 def print_labels(first, last, coffee, size, milk, flavor, shots, cost):
     print(f"{first} {last}\nDrink: {coffee}\nSize: {size}\nMilk Type:{milk}")
     print(f"Flavor: {flavor}, Number of pumps: {shots}")
+
+
+def review_order():
+    # Print the order for review
+    with open("orders.txt", "r") as file:
+        lines = file.readlines()
+
+    print("\nYour order has been saved. Here is your order:")
+    if not lines:
+        print("The order file is empty.")
+        return
+
+    # Grabbing the last line
+    last_order = lines[-1].strip()
+    parts = last_order.split(",").strip()
+    print("\nYour order has been saved. Here is your order:")
+    # Using [-1] to target the final entry specifically
+    item = 1
+    for part in parts:
+        print(f"{item}. {part}")
+        item += 1
+
+    print("\nConformation: ")
+    print("1. Correct, please process order")
+    print("2. Error, please let me modify")
+    print("3. Cancel, please delete and cancel order")
+    choice = int(input("select a number to confirm or change"))
+    if choice == 1:
+        pass
+    if choice == 2:
+        pass
+    if choice == 3:
+        pass
+    else:
+        print("I'm sorry, I do not recognize that choice")
+        review_order
 
 
 # This function calculates the cost based on the selected size.
@@ -227,10 +269,8 @@ def main():
     save_orders(first, last, ext, emp, coffee_order, size_order,
                 milk_order, flavor_order, pumps_order)
 
-    # Print the order for review
-    print("\nYour order has been saved. Here is your order:")
-    print_labels(first, last, coffee_order, size_order,
-                 milk_order, flavor_order, pumps_order, 0)
+    # review order
+    review_order()
 
-    
+
 main()
